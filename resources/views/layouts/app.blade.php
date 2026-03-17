@@ -10,12 +10,22 @@
 
     <nav>
         <a href="{{ route('recipes.index') }}">All Recipes</a>
-        <a href="{{ route('recipes.create') }}">Create Recipe</a>
+        @if(session('logged_in'))
+          <a href="{{ route('recipes.create') }}">Create Recipe</a>
+       
+@endif
+       <button><a href="/login-demo">Login</a></button>
+         <button><a href="/logout-demo">Logout</a></button>
+       
     </nav>
     @if(session('success'))
     <div>{{ session('success') }}</div>
     @endif
     @yield('content')
 
+    @if(session('error'))
+    <div>{{ session('error') }}</div>
+    @endif
+    
 </body>
 </html>
