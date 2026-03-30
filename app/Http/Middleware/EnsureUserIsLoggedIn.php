@@ -21,4 +21,8 @@ class EnsureUserIsLoggedIn
        
         return $next($request);
     }
+    public function __construct()
+{
+    $this->middleware('demo.auth')->except(['index', 'show']);
+}
 }

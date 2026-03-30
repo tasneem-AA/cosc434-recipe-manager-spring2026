@@ -21,10 +21,10 @@ class RecipeController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {
+{
         //
-        return view('recipes.create');
-    }
+    return view('recipes.create');
+}
 
     /**
      * Store a newly created resource in storage.
@@ -88,4 +88,6 @@ class RecipeController extends Controller
                 return redirect()->route('recipes.index')->with('success', "Recipe deleted");
 
     }
+    
+   
 }

@@ -20,8 +20,4 @@ Route::get('/logout-demo', function (Request $request) {
     session()->forget('logged_in');
     return redirect('/recipes')->with('success', 'You are now logged out!');
 });
-
-
-Route::resource('recipes', RecipeController::class)->middleware('demo.auth', [
-    'create', 'store', 'edit', 'update', 'destroy'
-]);
+Route::resource('recipes', RecipeController::class);
