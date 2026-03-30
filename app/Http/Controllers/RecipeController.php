@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Recipe;
 use Illuminate\Http\Request;
+use App\Models\Category;
+use App\Models\Tag;
+
 
 class RecipeController extends Controller
 {
@@ -13,7 +16,7 @@ class RecipeController extends Controller
     public function index()
     {
         //
-        $recipes = Recipe::latest()->get();
+       $recipes = Recipe::with(['category', 'tags'])->latest()->get();
         return view('recipes.index', compact('recipes'));
     }
 
@@ -23,7 +26,10 @@ class RecipeController extends Controller
     public function create()
 {
         //
-    return view('recipes.create');
+    return view('recipes.create', [
+        'categories' => Category::all(),
+        'tags' => Tag::all()
+    ]);
 }
 
     /**
@@ -36,10 +42,16 @@ class RecipeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'ingredients' => ['required', 'string'],
-            'instructions' => ['required', 'string']
+            'instructions' => ['required', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'tags' => ['array'],
+            'tags.*' => ['exists:tags,id']
         ]);
-        Recipe::create($data);
-        return redirect()->route('recipes.index')->with('success', "Recipe created!");
+        $tags = $data['tags'] ?? [];
+        unset($data['tags']);
+        $recipe = Recipe::create($data);
+        $recipe->tags()->attach($tags);
+        return redirect()->route('recipes.show', $recipe)->with('success', "Recipe Created");
     }
 
     /**
@@ -48,6 +60,7 @@ class RecipeController extends Controller
     public function show(Recipe $recipe)
     {
         //
+        $recipe->load(['category', 'tags']);
         return view('recipes.show', compact('recipe'));
 
     }
@@ -58,7 +71,11 @@ class RecipeController extends Controller
     public function edit(Recipe $recipe)
     {
         //
-        return view('recipes.edit', compact('recipe'));
+        return view('recipes.edit', [
+            'recipe' => $recipe,
+            'categories' => Category::all(),
+            'tags' => Tag::all()
+        ]);
 
     }
 
@@ -72,9 +89,13 @@ class RecipeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
             'ingredients' => ['required', 'string'],
-            'instructions' => ['required', 'string']
+            'instructions' => ['required', 'string'],
+            'category_id' => ['required', 'exists:categories,id'],
+            'tags' => ['array'],
+            'tags.*' => ['exists:tags,id']
         ]);
         $recipe->update($data);
+        $recipe->tags()->sync($data['tags'] ?? []);
         return redirect()->route('recipes.show', $recipe)->with('success', "Recipe Updated");
     }
 

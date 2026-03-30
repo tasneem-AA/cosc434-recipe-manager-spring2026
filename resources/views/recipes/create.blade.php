@@ -21,6 +21,25 @@
     <input type="text" name="instructions" value="{{ old('instructions') }}">
     <p><label for="">Description</label></p>
     <input type="text" name="description" value="{{ old('description') }}">
+    <p><label for="category_id">Category</label></p>
+<select name="category_id" id="category_id" required>
+    <option value="">Select a category</option>
+    @foreach(\App\Models\Category::all() as $category)
+        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+            {{ $category->name }}
+        </option>
+    @endforeach
+</select>
+
+<p><label>Tags</label></p>
+@foreach(\App\Models\Tag::all() as $tag)
+    <label>
+        <input type="checkbox" name="tags[]" value="{{ $tag->id }}"
+            {{ in_array($tag->id, old('tags', [])) ? 'checked' : '' }}>
+        {{ $tag->name }}
+    </label><br>
+@endforeach
+    
     <button type="submit"> Save</button>
     <a href="{{ route('recipes.index') }}">Cancel</a>
 </form>
